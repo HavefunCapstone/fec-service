@@ -24,8 +24,8 @@ export default class QuestionAndAnswer extends React.Component {
   fetchData(){
     axios.get('/questions/' + this.state.product_id)
     .then((result) => {
-      console.log(result.data.results);
-      this.setState({questions: result.data.results})
+      console.log(result.data);
+      this.setState({questions: result.data})
     })
     .catch(err => {
       console.log(err);
@@ -76,7 +76,7 @@ export default class QuestionAndAnswer extends React.Component {
           </div>
         </div>
       </div> */}
-        <QuestionList questions={[this.state.questions]} />
+        <QuestionList questions={this.state.questions} />
       </div>
     )
   }
