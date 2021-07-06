@@ -9,6 +9,8 @@ const axios = require('axios');
 
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true}));
 
 //get products from the API 
 app.get('/products/:id', (req, res) => {
@@ -50,7 +52,7 @@ app.get('/questions/:id', (req, res) => {
 });
 
 // posting question
-app.post('qa/questions', (req, res) => {
+app.post('/qa/questions', (req, res) => {
   const question = {body: req.body.body, name:req.body.name, email:req.body.email}
   axios.post('https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/questions' , req.body
     ,{
@@ -60,12 +62,79 @@ app.post('qa/questions', (req, res) => {
     }
   )
   .then((data) => {
-    res.send(data);
+    console.log(data.config.data)
+    res.send(data.config.data);
   })
   .catch((error) => {
     res.send(error);
   });
 });
+
+//getting answers 
+app.get('/questions/:question_id/answers', (req, res) => {
+  axios.get(`https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/questions/47584/answers`,
+{
+  headers: {
+    Authorization: config.TOKEN,
+  },
+})
+  .then((data) => {
+    res.send(data.data);
+  })
+  .catch((error) => {
+    console.log('error case:');
+    res.send(error);
+  });
+});
+
+//updating helpfulness for the questions
+app.put('/qa/questions/:question_id/helpful/', (req, res) => {
+  axios.put("https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/questions/" +req.params.question_id +"/helpful",
+{
+  headers: {
+    Authorization: config.TOKEN,
+  },
+})
+  .then((data) => {
+    console.log(data)
+    res.send(data);
+  })
+  .catch((error) => {
+    console.log('error case:');
+    res.send(error);
+  });
+});
+
+//updating helpfulness for the answers
+app.put('/qa/answers/:answer_id/helpful', (req, res) => {
+  axios.put("https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/answers/" + req.params.answer_id +"/helpful",
+{
+  headers: {
+    Authorization: config.TOKEN,
+  },
+})
+  .then((data) => {
+    res.send(data.data);
+  })
+  .catch((error) => {
+    console.log('error case:');
+    res.send(error);
+  });
+});
+
+app.put('/qa/answers/:answer_id/report', (req, res) => {
+  axios({
+    headers: {
+      Authorization: config.TOKEN,
+    },
+    url: `https://app-hrsei-api.herokuapp.com/api/fec2/hr-rfp/qa/questions/${req.params.answer_id}/report`,
+    method: 'put',
+  }).then((data) => {
+    res.send(data);
+  })
+    .catch((error) => { res.send(error); });
+});
+
 
 app.listen(port, () => {
   console.log(`server running at: http://localhost:${port}`);
