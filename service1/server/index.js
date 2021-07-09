@@ -4,7 +4,6 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3001;
 const config = require('../config.js');
-const TOKEN = require('../config').TOKEN;
 const axios = require('axios');
 
 app.use(morgan('dev'));
@@ -34,7 +33,7 @@ app.get('/products/:id', (req, res) => {
 });
 
 // getting questions from the API
-app.get('/questions/:id', (req, res) => {
+app.get('/api/qa/questions/:id', (req, res) => {
   axios.get("https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/questions?product_id=" +
   req.params.id,
 {
@@ -52,7 +51,7 @@ app.get('/questions/:id', (req, res) => {
 });
 
 // posting question
-app.post('/qa/questions', (req, res) => {
+app.post('/api/qa/questions', (req, res) => {
   const question = {body: req.body.body, name:req.body.name, email:req.body.email}
   axios.post('https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/questions' , req.body
     ,{
@@ -71,7 +70,7 @@ app.post('/qa/questions', (req, res) => {
 });
 
 //getting answers 
-app.get('/questions/:question_id/answers', (req, res) => {
+app.get('/api/qa/questions/:question_id/answers', (req, res) => {
   axios.get(`https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/questions/47584/answers`,
 {
   headers: {
@@ -88,26 +87,8 @@ app.get('/questions/:question_id/answers', (req, res) => {
 });
 
 //updating helpfulness for the questions
-app.put('/qa/questions/:question_id/helpful/', (req, res) => {
-  axios.put("https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/questions/" +req.params.question_id +"/helpful",
-{
-  headers: {
-    Authorization: config.TOKEN,
-  },
-})
-  .then((data) => {
-    console.log(data)
-    res.send(data);
-  })
-  .catch((error) => {
-    console.log('error case:');
-    res.send(error);
-  });
-});
-
-//updating helpfulness for the answers
-app.put('/qa/answers/:answer_id/helpful', (req, res) => {
-  axios.put("https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/answers/" + req.params.answer_id +"/helpful",
+app.put('/api/qa/questions/:question_id/helpful/', (req, res) => {
+  axios.put("https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/questions/" + req.params.question_id +"/helpful",{},
 {
   headers: {
     Authorization: config.TOKEN,
@@ -117,12 +98,28 @@ app.put('/qa/answers/:answer_id/helpful', (req, res) => {
     res.send(data.data);
   })
   .catch((error) => {
-    console.log('error case:');
     res.send(error);
   });
 });
 
-app.put('/qa/answers/:answer_id/report', (req, res) => {
+//updating helpfulness for the answers
+app.put('/api/qa/answers/:answer_id/helpful', (req, res) => {
+console.log(req.params.answer_id)
+  axios.put("https://app-hrsei-api.herokuapp.com/api/fec2/hrnyc/qa/answers/" + req.params.answer_id +"/helpful",{},
+{
+  headers: {
+    Authorization: config.TOKEN,
+  },
+})
+  .then((data) => {
+    res.send(data.data);
+  })
+  .catch((error) => {
+    res.send(error);
+  });
+});
+
+app.put('/api/qa/answers/:answer_id/report', (req, res) => {
   axios({
     headers: {
       Authorization: config.TOKEN,

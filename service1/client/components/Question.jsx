@@ -19,7 +19,7 @@ export default class Question extends React.Component {
   }
 
   fetchData(){
-    axios.get('/questions/' + this.state.question_id + '/answers')
+    axios.get('/api/qa/questions/' + this.state.question_id + '/answers')
     .then((result) => {
       console.log(result.data.results , "front");
       this.setState({answers: result.data.results})
@@ -31,7 +31,7 @@ export default class Question extends React.Component {
 
   //helpfull question
   markQuestionHelpful(question_id) {
-    let apiUrl = "/qa/questions";
+    let apiUrl = "/api/qa/questions";
 
     //sends the id and new author/text to our api
     axios
@@ -46,24 +46,25 @@ export default class Question extends React.Component {
 
   render() {
     return (
-      <>
-      <div className="">
-        <div className="flex">
+    
+      <div className="flex justify-between">
+        <div className="">
           <p className="text-lg font-semibold">Q: {this.props.question.question_body}</p>
-          <div className="flex px-52 text-sm">
+        <div className="">
+          <AnswersList answers={this.state.answers} />
+        </div>
+          </div>
+          <div className="px-48"></div>
+          <div className="flex max-w-screen-xl mx-auto text-sm content-start">
           <p className="">
             Helpful
           <a className="cursor-pointer m-2" onClick={()=> this.markQuestionHelpful()}>
             Yes ({this.props.question.question_helpfulness + this.state.questionHelpfulCounter})
           </a>
           </p>
-        </div>
-        </div>
-        <div className="">
-          <AnswersList answers={this.state.answers} />
-        </div>
-      </div><br/>
-      </>
+        </div><br/>
+      </div>
+      
     )
   }
 }

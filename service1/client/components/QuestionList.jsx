@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Question from './Question.jsx';
 import QuestionModal from './QuestionModal.jsx';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 export default class QuestionList extends React.Component {
     constructor(props){
@@ -53,6 +54,7 @@ export default class QuestionList extends React.Component {
             <div className="p-8">
                 <h2 className="text-xl font-bold">Question & Answer:</h2><br/>
                 <div className="flex flex-col">
+                <Scrollbars autoHeight autoWidth autoHeightMin={300} autoHeightMax={500} autoShow>
                 { this.props.questions
                 .sort((a, b) =>(a.question_helpfulness > b.question_helpfulness) ? -1 : 1)
                 .filter((ele, idx) => idx < this.state.showQuestion && (!this.state.beginSearsh || ele.question_body.includes(this.state.inputSearch)))
@@ -61,6 +63,7 @@ export default class QuestionList extends React.Component {
                     return(<Question question={question}
                     key={question.question_id} />)}  
                 )}
+                </Scrollbars>
                 </div>
                 <div className="">
                     <button onClick={this.loadMore} className="border-1 border-gray-800 bg-emerald-500 text-black active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg mr-1 mb-1 ease-linear transition-all duration-150">
